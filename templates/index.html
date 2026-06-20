@@ -126,6 +126,44 @@
             font-size: 12px;
             font-weight: 600;
         }
+
+        /* History Table Styling */
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+        .table th, .table td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .table th {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+        }
+        .table tr:hover {
+            background-color: #f8fafc;
+        }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            text-transform: capitalize;
+        }
+        .bg-success { background-color: #dcfce7; color: #166534; }
+        .bg-danger { background-color: #fee2e2; color: #991b1b; }
+        .bg-secondary { background-color: #e2e8f0; color: #475569; }
+        .text-center { text-align: center; }
+        .text-muted { color: #64748b; }
+        .small { font-size: 12px; }
     </style>
 </head>
 <body>
@@ -151,7 +189,6 @@
             <div id="urlMetrics" style="font-size: 14px; color: #334155;"></div>
         </div>
     </div>
-
 
     <div class="scanner-card">
         <h3>💬 AI Hybrid Message Scanner</h3>
@@ -184,9 +221,73 @@
             <div id="directFlags" class="flag-list"></div>
         </div>
     </div>
+
+    <div class="scanner-card" style="margin-top: 35px;">
+        <h3>📜 Recent Scan History Log</h3>
+        <p style="color: #64748b; font-size: 14px; margin-top: -5px;">Live database sync pipelines fetched directly from backend storage logs.</p>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Scanned Content</th>
+                        <th>Verdict</th>
+                        <th>Risk Score</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">Loading historical framework records...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <script>
+    // Database Engine Framework Async Loader
+    async function loadScanHistory() {
+        try {
+            const response = await fetch('/api/history');
+            const data = await response.json();
+            
+            const tableBody = document.getElementById('historyTableBody');
+            tableBody.innerHTML = ''; 
+            
+            if (!data || data.length === 0 || data.error) {
+                tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No database transaction logs recorded yet.</td></tr>`;
+                return;
+            }
+            
+            data.forEach(item => {
+                const cleanResult = item.result.toLowerCase();
+                const isSafe = cleanResult === 'safe' || cleanResult === 'clean' || cleanResult.includes('legitimate');
+                const badgeClass = isSafe ? 'bg-success' : 'bg-danger';
+                
+                const scoreDisplay = item.score !== undefined ? `${item.score}%` : 'N/A';
+                
+                const row = `
+                    <tr>
+                        <td><span class="badge bg-secondary">${item.type}</span></td>
+                        <td style="max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.input}">${item.input}</td>
+                        <td><span class="badge ${badgeClass}">${item.result}</span></td>
+                        <td><strong>${scoreDisplay}</strong></td>
+                        <td class="small text-muted">${item.time}</td>
+                    </tr>
+                `;
+                tableBody.insertAdjacentHTML('beforeend', row);
+            });
+        } catch (error) {
+            console.error('Error fetching dashboard database logs:', error);
+            document.getElementById('historyTableBody').innerHTML = `<tr><td colspan="5" class="text-center text-muted" style="color: #dc2626 !important;">Failed to load server relational logs.</td></tr>`;
+        }
+    }
+
+    // Load active records immediately when page initialises
+    document.addEventListener('DOMContentLoaded', loadScanHistory);
+
     // 1. Script for URL Scan endpoint routing
     async function runUrlAnalysis() {
         const urlInput = document.getElementById('url_input').value.trim();
@@ -214,16 +315,19 @@
 
             if (response.ok) {
                 urlResultBox.style.display = "block";
-                if (data.prediction === "Phishing Website") {
+                if (data.prediction === "Phishing Website" || data.prediction === "Suspicious") {
                     urlResultBox.style.borderLeftColor = "#dc2626";
                     urlVerdict.style.color = "#991b1b";
-                    urlVerdict.innerHTML = "🚨 THREAT DECTECTED: Phishing Domain Architecture Match";
+                    urlVerdict.innerHTML = "🚨 THREAT DETECTED: Phishing Domain Architecture Match";
                 } else {
                     urlResultBox.style.borderLeftColor = "#16a34a";
                     urlVerdict.style.color = "#166534";
                     urlVerdict.innerHTML = "✅ SAFE: Legitimate Web Destination Registration Verified";
                 }
                 urlMetrics.innerHTML = `Phishing Probability: ${(data.phish_probability * 100).toFixed(2)}% | Legitimacy Probability: ${(data.legit_probability * 100).toFixed(2)}%`;
+                
+                // Hot reload history log layout component update
+                loadScanHistory();
             } else {
                 alert("URL System Error: " + data.error);
             }
@@ -291,6 +395,9 @@
                 } else {
                     flagsDiv.innerHTML = "<span style='font-size: 13px; color:#64748b;'>No suspicious heuristic rules triggered.</span>";
                 }
+                
+                // Hot reload history log layout component update
+                loadScanHistory();
             } else {
                 alert("Message System Error: " + data.error);
             }

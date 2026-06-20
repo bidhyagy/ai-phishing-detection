@@ -14,11 +14,28 @@ DB_PATH = r"C:\Users\user\OneDrive\Desktop\Ai based phisphing detection\scan_his
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
+    
+    # Check if table exists with old layout schema
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='scans'")
+    table_exists = cursor.fetchone()
+    
+    if table_exists:
+        # Check if column layout contains scan_type
+        cursor.execute("PRAGMA table_info(scans)")
+        columns = [col[1] for col in cursor.fetchall()]
+        if 'scan_type' not in columns:
+            print("⚠️ Outdated database schema detected. Rebuilding table structures...")
+            cursor.execute('DROP TABLE IF EXISTS scans')
+            conn.commit()
+
+    # Unified table schema tracking both URL and text scans seamlessly
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS scans (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            url TEXT NOT NULL,
-            verdict TEXT NOT NULL,
+            scan_type TEXT DEFAULT 'url',
+            input_data TEXT NOT NULL,
+            result TEXT NOT NULL,
+            score INTEGER DEFAULT 0,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     ''')
@@ -26,6 +43,7 @@ def init_db():
     conn.close()
     print(f"💾 SQLite Target Set & Verified: {DB_PATH}")
 
+# Core database synchronization run
 init_db()
 
 with open('model.pkl', 'rb') as file:
@@ -170,7 +188,10 @@ def predict():
 
             conn = sqlite3.connect(DB_PATH)
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO scans (url, verdict) VALUES (?, ?)", (url, "Phishing Website"))
+            cursor.execute(
+                "INSERT INTO scans (scan_type, input_data, result, score) VALUES (?, ?, ?, ?)", 
+                ("url", url, "Phishing Website", 100)
+            )
             conn.commit()
             conn.close()
             print(f"🚨 BRAND IMPERSONATION: {url}")
@@ -206,7 +227,10 @@ def predict():
 
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO scans (url, verdict) VALUES (?, ?)", (url, result_string))
+        cursor.execute(
+            "INSERT INTO scans (scan_type, input_data, result, score) VALUES (?, ?, ?, ?)", 
+            ("url", url, result_string, int(phish_probability * 100))
+        )
         conn.commit()
         conn.close()
         print(f"📁 Logged: {url}")
@@ -225,11 +249,11 @@ def predict():
 
 
 @app.route('/history', methods=['GET'])
-def get_history():
+def get_raw_url_history():
     try:
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        cursor.execute("SELECT url, verdict, timestamp FROM scans ORDER BY id DESC LIMIT 10")
+        cursor.execute("SELECT input_data, result, timestamp FROM scans WHERE scan_type='url' ORDER BY id DESC LIMIT 10")
         rows = cursor.fetchall()
         conn.close()
 
@@ -243,18 +267,39 @@ def get_history():
         return jsonify(history_list)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
 @app.route("/message-analyzer")
 def message_analyzer_page():
     return render_template("message_analyzer.html")
 
+
 @app.route("/analyze-message", methods=["POST"])
 def analyze_message_route():
-    data = request.get_json()
-    message = data.get("message", "").strip()
-    msg_type = data.get("msg_type", "email")
-    if not message:
-        return jsonify({"error": "No message provided"}), 400
-    return jsonify(analyze_message(message, msg_type))
+    try:
+        data = request.get_json()
+        message = data.get("message", "").strip()
+        msg_type = data.get("msg_type", "email")
+        if not message:
+            return jsonify({"error": "No message provided"}), 400
+        
+        # Analyze using local package engine
+        analysis_res = analyze_message(message, msg_type)
+        
+        # Log message data directly inside unified database layout
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO scans (scan_type, input_data, result, score) VALUES (?, ?, ?, ?)",
+            (msg_type, message, analysis_res.get('final_verdict', 'Unknown'), analysis_res.get('risk_score', 0))
+        )
+        conn.commit()
+        conn.close()
+        
+        return jsonify(analysis_res)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route("/message-history")
 def message_history_route():
@@ -262,6 +307,31 @@ def message_history_route():
         "history": get_message_history(50),
         "report":  get_model_report()
     })
+
+
+@app.route('/api/history', methods=['GET'])
+def get_recent_history():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        # Fetches unified structural elements cleanly mapping configuration
+        cursor.execute("SELECT scan_type, input_data, result, score, timestamp FROM scans ORDER BY id DESC LIMIT 10")
+        rows = cursor.fetchall()
+        
+        history_list = []
+        for row in rows:
+            history_list.append({
+                'type': row[0],
+                'input': row[1],
+                'result': row[2],
+                'score': row[3],
+                'time': row[4]
+            })
+        return jsonify(history_list)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        conn.close()
 
 
 if __name__ == '__main__':
