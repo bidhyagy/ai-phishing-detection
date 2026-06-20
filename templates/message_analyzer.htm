@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Phishing Shield - Message Analyzer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 650px;
+            margin: 40px auto;
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+        h2 {
+            color: #38bdf8;
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        select, textarea {
+            width: 100%;
+            padding: 12px;
+            background-color: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            color: #fff;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+        textarea {
+            height: 140px;
+            resize: vertical;
+        }
+        button {
+            background-color: #38bdf8;
+            color: #0f172a;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #0ea5e9;
+        }
+        .result-card {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+            background: #111827;
+            border-left: 6px solid #475569;
+        }
+        .verdict-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        /* Color variations matching final_verdict responses */
+        .verdict-Suspicious { border-left-color: #ef4444; color: #fca5a5; }
+        .verdict-Legitimate { border-left-color: #10b981; color: #a7f3d0; }
+
+        /* Risk Metric Score Bar Styles */
+        .progress-container {
+            background-color: #374151;
+            border-radius: 4px;
+            margin: 15px 0;
+            height: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease-in-out;
+        }
+        .bg-suspicious { background-color: #ef4444; }
+        .bg-legitimate { background-color: #10b981; }
+
+        /* Flag Badges */
+        .flag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 0;
+            list-style: none;
+        }
+        .flag-badge {
+            background-color: #7f1d1d;
+            color: #fca5a5;
+            border: 1px solid #f87171;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🔒 AI Hybrid Message Shield</h2>
+    <p>Submit your message to cross-evaluate it against Naive Bayes, Random Forest, and heuristic flags.</p>
+    
+    <form id="analyzerForm">
+        <div class="form-group">
+            <label for="msg_type">Message Type:</label>
+            <select id="msg_type">
+                <option value="email">📧 Email Block Content</option>
+                <option value="sms">💬 SMS / Smishing Text</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="message">Content Text Body:</label>
+            <textarea id="message" placeholder="Paste verification, billing hooks, or context text streams here..." required></textarea>
+        </div>
+
+        <button type="submit" id="submitBtn">Run Ensemble Check</button>
+    </form>
+
+    <div id="resultDashboard" class="result-card">
+        <div id="verdictText" class="verdict-header"></div>
+        <div>Calculated Core Risk Profile Matrix Evaluation: <span id="riskValue"></span>%</div>
+        
+        <div class="progress-container">
+            <div id="riskBar" class="progress-bar"></div>
+        </div>
+
+        <div style="margin-top: 15px; font-weight: 600;">System Generated Risk Flags:</div>
+        <ul id="flagContainer" class="flag-list"></ul>
+    </div>
+</div>
+
+<script>
+    document.getElementById('analyzerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const messageText = document.getElementById('message').value;
+        const msgType = document.getElementById('msg_type').value;
+        const resultDashboard = document.getElementById('resultDashboard');
+        const verdictText = document.getElementById('verdictText');
+        const riskValue = document.getElementById('riskValue');
+        const riskBar = document.getElementById('riskBar');
+        const flagContainer = document.getElementById('flagContainer');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        submitBtn.innerText = "Processing Ensemble Framework Pipelines...";
+        submitBtn.disabled = true;
+        resultDashboard.style.display = "none";
+        flagContainer.innerHTML = "";
+
+        try {
+            const response = await fetch('/analyze-message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: messageText, msg_type: msgType })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Reset styling clean configurations
+                resultDashboard.className = "result-card verdict-" + data.final_verdict;
+                resultDashboard.style.display = "block";
+
+                // Map results directly out of data object returns from analyzer engine
+                if (data.final_verdict === "Suspicious") {
+                    verdictText.innerHTML = `⚠️ THREAT DETECTION: Flagged as Malicious / Phishing`;
+                    riskBar.className = "progress-bar bg-suspicious";
+                } else {
+                    verdictText.innerHTML = `✅ CLEAN VERDICT: Legitimate Communications Pattern`;
+                    riskBar.className = "progress-bar bg-legitimate";
+                }
+
+                // Append interactive visual risk value computations
+                riskValue.innerText = data.risk_score;
+                riskBar.style.width = data.risk_score + "%";
+
+                // Build structural UI badge item loop iteration over array items maps
+                if (data.flags && data.flags.length > 0) {
+                    data.flags.forEach(flag => {
+                        const badge = document.createElement('li');
+                        badge.className = "flag-badge";
+                        badge.innerText = flag;
+                        flagContainer.appendChild(badge);
+                    });
+                } else {
+                    flagContainer.innerHTML = "<li style='font-size: 14px; color:#9ca3af;'>No indicators triggered.</li>";
+                }
+            } else {
+                alert("Processing Error: " + data.error);
+            }
+        } catch (err) {
+            alert("Connection error occurred contacting back-end routing automation systems.");
+        } finally {
+            submitBtn.innerText = "Run Ensemble Check";
+            submitBtn.disabled = false;
+        }
+    });
+</script>
+
+</body>
+</html>

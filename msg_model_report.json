@@ -1,0 +1,69 @@
+{
+  "models": [
+    {
+      "model": "Naive Bayes",
+      "accuracy": 75.0,
+      "precision": 75.0,
+      "recall": 75.0,
+      "f1": 75.0,
+      "cv_f1_mean": 86.17,
+      "cv_f1_std": 11.25,
+      "confusion_matrix": [
+        [
+          6,
+          2
+        ],
+        [
+          2,
+          6
+        ]
+      ],
+      "class_report": {
+        "legitimate": {
+          "precision": 75.0,
+          "recall": 75.0,
+          "f1": 75.0
+        },
+        "suspicious": {
+          "precision": 75.0,
+          "recall": 75.0,
+          "f1": 75.0
+        }
+      }
+    },
+    {
+      "model": "Random Forest",
+      "accuracy": 93.75,
+      "precision": 100.0,
+      "recall": 87.5,
+      "f1": 93.33,
+      "cv_f1_mean": 86.76,
+      "cv_f1_std": 16.02,
+      "confusion_matrix": [
+        [
+          8,
+          0
+        ],
+        [
+          1,
+          7
+        ]
+      ],
+      "class_report": {
+        "legitimate": {
+          "precision": 88.89,
+          "recall": 100.0,
+          "f1": 94.12
+        },
+        "suspicious": {
+          "precision": 100.0,
+          "recall": 87.5,
+          "f1": 93.33
+        }
+      }
+    }
+  ],
+  "winner": "Random Forest",
+  "training_samples": 64,
+  "test_samples": 16
+}

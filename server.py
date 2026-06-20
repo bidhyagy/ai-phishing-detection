@@ -4,7 +4,8 @@ import re
 import sqlite3
 import pandas as pd
 from difflib import SequenceMatcher
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify, render_template
+from message_analyzer import analyze_message, get_message_history, get_model_report
 
 app = Flask(__name__)
 
@@ -242,6 +243,25 @@ def get_history():
         return jsonify(history_list)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+@app.route("/message-analyzer")
+def message_analyzer_page():
+    return render_template("message_analyzer.html")
+
+@app.route("/analyze-message", methods=["POST"])
+def analyze_message_route():
+    data = request.get_json()
+    message = data.get("message", "").strip()
+    msg_type = data.get("msg_type", "email")
+    if not message:
+        return jsonify({"error": "No message provided"}), 400
+    return jsonify(analyze_message(message, msg_type))
+
+@app.route("/message-history")
+def message_history_route():
+    return jsonify({
+        "history": get_message_history(50),
+        "report":  get_model_report()
+    })
 
 
 if __name__ == '__main__':
