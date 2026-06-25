@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Phishing Shield Dashboard</title>
     <style>
-        /* Base Page Styling - Changed to White/Light Theme */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8fafc;
@@ -13,46 +12,21 @@
             margin: 0;
             padding: 20px;
         }
-        .container {
-            max-width: 750px;
-            margin: 40px auto;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        .header h1 {
-            color: #0284c7;
-            margin-bottom: 8px;
-        }
-        .header p {
-            color: #475569;
-            margin-top: 0;
-        }
-
-        /* Card Section Component Styling */
+        .container { max-width: 750px; margin: 40px auto; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .header h1 { color: #0284c7; margin-bottom: 8px; }
+        .header p { color: #475569; margin-top: 0; }
         .scanner-card {
-            background: #ffffff; 
-            padding: 25px; 
-            border-radius: 12px; 
-            margin-top: 25px; 
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 25px;
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             border: 1px solid #e2e8f0;
         }
-        h2, h3 {
-            color: #0284c7;
-            margin-top: 0;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            font-size: 14px;
-            color: #334155;
-        }
+        h2, h3 { color: #0284c7; margin-top: 0; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #334155; }
         input[type="text"], select, textarea {
             width: 100%;
             padding: 12px;
@@ -67,10 +41,7 @@
             outline: 2px solid #38bdf8;
             background-color: #fff;
         }
-        textarea {
-            height: 120px;
-            resize: vertical;
-        }
+        textarea { height: 120px; resize: vertical; }
         .action-btn {
             background-color: #0284c7;
             color: #ffffff;
@@ -83,11 +54,9 @@
             width: 100%;
             transition: background 0.2s;
         }
-        .action-btn:hover {
-            background-color: #0369a1;
-        }
-
-        /* Results Display Containers */
+        .action-btn:hover { background-color: #0369a1; }
+        .action-btn.green { background-color: #16a34a; }
+        .action-btn.green:hover { background-color: #15803d; }
         .result-box {
             margin-top: 20px;
             padding: 15px;
@@ -106,17 +75,8 @@
             overflow: hidden;
             margin: 10px 0;
         }
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            transition: width 0.4s ease;
-        }
-        .flag-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 8px;
-        }
+        .progress-bar { height: 100%; width: 0%; transition: width 0.4s ease; }
+        .flag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
         .flag-badge {
             background: #fee2e2;
             color: #991b1b;
@@ -126,30 +86,117 @@
             font-size: 12px;
             font-weight: 600;
         }
-
-        /* History Table Styling */
-        .table-responsive {
-            overflow-x: auto;
-            margin-top: 15px;
+        .flag-badge.worldcup {
+            background: #fef3c7;
+            color: #92400e;
+            border-color: #fcd34d;
         }
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 14px;
+        .flag-badge.gov {
+            background: #dbeafe;
+            color: #1e40af;
+            border-color: #93c5fd;
         }
-        .table th, .table td {
-            padding: 12px;
-            border-bottom: 1px solid #e2e8f0;
+        .flag-badge.edu {
+            background: #d1fae5;
+            color: #065f46;
+            border-color: #6ee7b7;
         }
-        .table th {
-            background-color: #f1f5f9;
-            color: #475569;
-            font-weight: 600;
+        .flag-badge.office {
+            background: #ede9fe;
+            color: #5b21b6;
+            border-color: #c4b5fd;
         }
-        .table tr:hover {
-            background-color: #f8fafc;
+        .flag-badge.safe {
+            background: #dcfce7;
+            color: #166534;
+            border-color: #86efac;
         }
+        .category-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .cat-general    { background: #e2e8f0; color: #334155; border: 1px solid #94a3b8; }
+        .cat-gov        { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+        .cat-edu        { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+        .cat-office     { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
+        .cat-worldcup   { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+        .cat-fake       { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        .email-meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 12px 0;
+        }
+        .email-meta-item {
+            background: #f1f5f9;
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-size: 13px;
+        }
+        .email-meta-item span {
+            display: block;
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+        .email-meta-item strong { font-size: 14px; }
+        .risk-critical { color: #991b1b; font-weight: 700; }
+        .risk-high     { color: #c2410c; font-weight: 700; }
+        .risk-medium   { color: #b45309; font-weight: 700; }
+        .risk-low      { color: #166534; font-weight: 700; }
+        .worldcup-panel {
+            background: linear-gradient(135deg, #fef9c3 0%, #fef3c7 100%);
+            border: 1px solid #fcd34d;
+            border-left: 5px solid #f59e0b;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-top: 20px;
+        }
+        .worldcup-panel h4 { color: #92400e; margin: 0 0 8px 0; font-size: 15px; }
+        .worldcup-panel p { color: #78350f; font-size: 13px; margin: 4px 0; }
+        .worldcup-domain-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+        .worldcup-domain-tag {
+            background: #fff;
+            border: 1px solid #fbbf24;
+            color: #92400e;
+            padding: 2px 9px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-family: monospace;
+        }
+        .info-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .info-panel {
+            border-radius: 8px;
+            padding: 14px 16px;
+            font-size: 13px;
+        }
+        .info-panel h4 { margin: 0 0 6px 0; font-size: 14px; }
+        .info-panel p  { margin: 3px 0; font-size: 12px; }
+        .panel-gov   { background: #eff6ff; border: 1px solid #93c5fd; border-left: 4px solid #2563eb; }
+        .panel-gov h4 { color: #1e40af; }
+        .panel-gov p  { color: #1e3a8a; }
+        .panel-edu   { background: #f0fdf4; border: 1px solid #6ee7b7; border-left: 4px solid #16a34a; }
+        .panel-edu h4 { color: #065f46; }
+        .panel-edu p  { color: #14532d; }
+        .panel-office { background: #f5f3ff; border: 1px solid #c4b5fd; border-left: 4px solid #7c3aed; }
+        .panel-office h4 { color: #5b21b6; }
+        .panel-office p  { color: #4c1d95; }
+        .panel-wc    { background: linear-gradient(135deg,#fef9c3,#fef3c7); border: 1px solid #fcd34d; border-left: 4px solid #f59e0b; }
+        .panel-wc h4 { color: #92400e; }
+        .panel-wc p  { color: #78350f; }
+        .table-responsive { overflow-x: auto; margin-top: 15px; }
+        .table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        .table th, .table td { padding: 12px; border-bottom: 1px solid #e2e8f0; }
+        .table th { background-color: #f1f5f9; color: #475569; font-weight: 600; }
+        .table tr:hover { background-color: #f8fafc; }
         .badge {
             padding: 4px 8px;
             border-radius: 4px;
@@ -158,42 +205,153 @@
             display: inline-block;
             text-transform: capitalize;
         }
-        .bg-success { background-color: #dcfce7; color: #166534; }
-        .bg-danger { background-color: #fee2e2; color: #991b1b; }
+        .bg-success   { background-color: #dcfce7; color: #166534; }
+        .bg-danger    { background-color: #fee2e2; color: #991b1b; }
+        .bg-warning   { background-color: #fef3c7; color: #92400e; }
         .bg-secondary { background-color: #e2e8f0; color: #475569; }
-        .text-center { text-align: center; }
-        .text-muted { color: #64748b; }
-        .small { font-size: 12px; }
+        .bg-email     { background-color: #ede9fe; color: #5b21b6; }
+        .text-center  { text-align: center; }
+        .text-muted   { color: #64748b; }
+        .small        { font-size: 12px; }
     </style>
 </head>
 <body>
-
 <div class="container">
+
     <div class="header">
         <h1>🛡️ AI Phishing Shield</h1>
-        <p>Unified Threat Detection Gateway for Malicious URLs and Social Engineering Messages</p>
+        <p>Unified Threat Detection Gateway — URLs, Emails & Social Engineering Messages</p>
     </div>
 
+    <!-- 1. URL SCANNER -->
     <div class="scanner-card">
         <h2>🌐 Website URL Scanner</h2>
-        <p style="color: #64748b; font-size: 14px; margin-top: -5px;">Evaluates links across a 30-feature structural matrix check.</p>
-        
+        <p style="color:#64748b;font-size:14px;margin-top:-5px;">Evaluates links across a 30-feature structural matrix check.</p>
         <div class="form-group">
             <label for="url_input">Paste Suspicious URL Link:</label>
             <input type="text" id="url_input" placeholder="https://example-phishing-login.com">
         </div>
         <button class="action-btn" id="urlBtn" onclick="runUrlAnalysis()">Scan URL Security</button>
-
         <div id="urlResultBox" class="result-box">
-            <div id="urlVerdict" style="font-size: 16px; font-weight: bold; margin-bottom: 6px;"></div>
-            <div id="urlMetrics" style="font-size: 14px; color: #334155;"></div>
+            <div id="urlVerdict" style="font-size:16px;font-weight:bold;margin-bottom:6px;"></div>
+            <div id="urlMetrics" style="font-size:14px;color:#334155;"></div>
         </div>
     </div>
 
+    <!-- 2. EMAIL DOMAIN CHECKER -->
+    <div class="scanner-card">
+        <h2>📧 Email Domain Checker</h2>
+        <p style="color:#64748b;font-size:14px;margin-top:-5px;">
+            Detects disposable providers, brand impersonation, and phishing campaigns across
+            <strong style="color:#1e40af;">🏛️ Government</strong>,
+            <strong style="color:#065f46;">🎓 Education</strong>,
+            <strong style="color:#5b21b6;">💼 Office/Corporate</strong> &
+            <strong style="color:#92400e;">⚽ World Cup 2026</strong> domains.
+        </p>
+        <div class="form-group">
+            <label for="email_input">Enter Email Address to Check:</label>
+            <input type="text" id="email_input" placeholder="support@fifa-ticket.live">
+        </div>
+        <button class="action-btn green" id="emailBtn" onclick="runEmailCheck()">Analyze Email Domain</button>
+
+        <div id="emailResultBox" class="result-box">
+            <div id="emailVerdict" style="font-size:16px;font-weight:bold;margin-bottom:10px;"></div>
+            <div id="emailCategoryPill"></div>
+            <div class="email-meta-grid">
+                <div class="email-meta-item">
+                    <span>Domain</span>
+                    <strong id="emailDomain">—</strong>
+                </div>
+                <div class="email-meta-item">
+                    <span>Risk Level</span>
+                    <strong id="emailRiskLevel">—</strong>
+                </div>
+                <div class="email-meta-item">
+                    <span>Risk Score</span>
+                    <strong id="emailScore">—</strong>
+                </div>
+                <div class="email-meta-item">
+                    <span>Domain Category</span>
+                    <strong id="emailCategory">—</strong>
+                </div>
+                <div class="email-meta-item">
+                    <span>World Cup Related</span>
+                    <strong id="emailWC">—</strong>
+                </div>
+                <div class="email-meta-item">
+                    <span>Fake Category Impersonation</span>
+                    <strong id="emailFakeCat">—</strong>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div id="emailRiskBar" class="progress-bar"></div>
+            </div>
+            <div style="font-size:13px;font-weight:600;color:#475569;margin-top:12px;">Triggered Risk Flags:</div>
+            <div id="emailFlags" class="flag-list"></div>
+        </div>
+
+        <!-- Category Info Panels -->
+        <div class="info-panels">
+            <div class="info-panel panel-gov">
+                <h4>🏛️ Government Domain Threats</h4>
+                <p>🔴 IRS, HMRC, passport & visa impersonations</p>
+                <p>🔴 Fake stimulus & tax-refund phishing sites</p>
+                <p>✅ Real .gov / .gov.np / .gov.uk TLDs verified</p>
+            </div>
+            <div class="info-panel panel-edu">
+                <h4>🎓 Education Domain Threats</h4>
+                <p>🔴 Fake Harvard, MIT, Oxford scholarship emails</p>
+                <p>🔴 Fraudulent student-portal & grant lures</p>
+                <p>✅ Real .edu / .ac.uk / .edu.np TLDs verified</p>
+            </div>
+            <div class="info-panel panel-office">
+                <h4>💼 Office / Corporate Threats</h4>
+                <p>🔴 Microsoft 365, Outlook, Teams phishing</p>
+                <p>🔴 Zoom, Slack, Dropbox credential theft</p>
+                <p>✅ Real office.com / microsoft.com verified</p>
+            </div>
+            <div class="info-panel panel-wc">
+                <h4>⚽ World Cup 2026 Threats</h4>
+                <p>🔴 19,000+ FIFA-themed domains registered</p>
+                <p>🔴 Ghost Stadium: 300+ active clones</p>
+                <p>⚠️ Window: June 11 – July 19, 2026</p>
+            </div>
+        </div>
+
+        <!-- World Cup Threat Panel -->
+        <div class="worldcup-panel">
+            <h4>⚽ World Cup 2026 Active Phishing Intelligence</h4>
+            <p>🔴 <strong>19,000+</strong> FIFA-themed domains registered since Jan 2026 — 8.8% confirmed malicious</p>
+            <p>🔴 <strong>Ghost Stadium</strong> operation: 300+ active phishing pages cloning FIFA login</p>
+            <p>🔴 <strong>270,000+</strong> compromised credentials already in circulation (June 2026)</p>
+            <p>⚠️ High-risk tournament window: <strong>June 11 – July 19, 2026</strong></p>
+            <div style="font-size:12px;color:#92400e;margin-top:8px;font-weight:600;">FBI-Confirmed Fake Domains — AVOID:</div>
+            <div class="worldcup-domain-list">
+                <span class="worldcup-domain-tag">fifa.city</span>
+                <span class="worldcup-domain-tag">fiffa.com</span>
+                <span class="worldcup-domain-tag">fifa.help</span>
+                <span class="worldcup-domain-tag">fifa.pink</span>
+                <span class="worldcup-domain-tag">fifa.buzz</span>
+                <span class="worldcup-domain-tag">fifa-web.co</span>
+                <span class="worldcup-domain-tag">fifa-com.xyz</span>
+                <span class="worldcup-domain-tag">fifa-online.com</span>
+                <span class="worldcup-domain-tag">fifa-ticket.live</span>
+                <span class="worldcup-domain-tag">jobs-fifa.com</span>
+                <span class="worldcup-domain-tag">ww-fifa.com</span>
+                <span class="worldcup-domain-tag">usavisaworldcup.com</span>
+                <span class="worldcup-domain-tag">fifaticket2026vip.com</span>
+                <span class="worldcup-domain-tag">fifaworldcup-careers.com</span>
+            </div>
+            <p style="margin-top:10px;font-size:11px;color:#a16207;">
+                Source: FBI IC3 PSA260527 · Group-IB · Cyble · FortiGuard Labs · CybelAngel · Bitdefender — June 2026
+            </p>
+        </div>
+    </div>
+
+    <!-- 3. MESSAGE SCANNER -->
     <div class="scanner-card">
         <h3>💬 AI Hybrid Message Scanner</h3>
-        <p style="color: #64748b; font-size: 14px; margin-top: -5px;">Cross-checks texts against Naive Bayes, Random Forest, and 15 custom regex rule indicators.</p>
-        
+        <p style="color:#64748b;font-size:14px;margin-top:-5px;">Cross-checks texts against Naive Bayes, Random Forest, and 15 custom regex rule indicators.</p>
         <div class="form-group">
             <label for="direct_msg_type">Message Source Type:</label>
             <select id="direct_msg_type">
@@ -201,30 +359,28 @@
                 <option value="sms">💬 SMS / Smishing Text</option>
             </select>
         </div>
-
         <div class="form-group">
             <label for="direct_message">Message Content String:</label>
             <textarea id="direct_message" placeholder="Paste structural text sequences, billing warnings, or prize wins here..."></textarea>
         </div>
-
         <button class="action-btn" id="directMsgBtn" onclick="runDirectMessageAnalysis()">Run Ensemble Check</button>
-
         <div id="directMsgResult" class="result-box">
-            <div id="directVerdict" style="font-size: 16px; font-weight: bold; margin-bottom: 8px;"></div>
-            <div style="font-size: 14px; margin-bottom: 6px; color: #334155;">Risk Profile Score: <span id="directRiskValue">0</span>%</div>
-            
+            <div id="directVerdict" style="font-size:16px;font-weight:bold;margin-bottom:8px;"></div>
+            <div style="font-size:14px;margin-bottom:6px;color:#334155;">
+                Risk Profile Score: <span id="directRiskValue">0</span>%
+            </div>
             <div class="progress-container">
                 <div id="directRiskBar" class="progress-bar"></div>
             </div>
-            
-            <div style="font-size: 13px; font-weight: 600; color: #475569; margin-top: 12px;">Triggered Heuristic Flag Identifiers:</div>
+            <div style="font-size:13px;font-weight:600;color:#475569;margin-top:12px;">Triggered Heuristic Flag Identifiers:</div>
             <div id="directFlags" class="flag-list"></div>
         </div>
     </div>
 
-    <div class="scanner-card" style="margin-top: 35px;">
+    <!-- 4. HISTORY LOG -->
+    <div class="scanner-card" style="margin-top:35px;">
         <h3>📜 Recent Scan History Log</h3>
-        <p style="color: #64748b; font-size: 14px; margin-top: -5px;">Live database sync pipelines fetched directly from backend storage logs.</p>
+        <p style="color:#64748b;font-size:14px;margin-top:-5px;">Live database sync — URLs, emails & messages logged in real time.</p>
         <div class="table-responsive">
             <table class="table">
                 <thead>
@@ -237,58 +393,90 @@
                     </tr>
                 </thead>
                 <tbody id="historyTableBody">
-                    <tr>
-                        <td colspan="5" class="text-center text-muted">Loading historical framework records...</td>
-                    </tr>
+                    <tr><td colspan="5" class="text-center text-muted">Loading historical framework records...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
+
 </div>
 
 <script>
-    // Database Engine Framework Async Loader
+    const CATEGORY_STYLES = {
+        "Government":       { cls: "cat-gov",      label: "🏛️ Government" },
+        "Education":        { cls: "cat-edu",      label: "🎓 Education" },
+        "Office/Corporate": { cls: "cat-office",   label: "💼 Office / Corporate" },
+        "World Cup 2026":   { cls: "cat-worldcup", label: "⚽ World Cup 2026" },
+        "General":          { cls: "cat-general",  label: "🌐 General" },
+    };
+
+    const FLAG_CATEGORY_CLASS = {
+        "🏛️": "gov",
+        "🎓": "edu",
+        "💼": "office",
+        "⚽": "worldcup",
+    };
+
+    function getFlagClass(flag) {
+        for (const [icon, cls] of Object.entries(FLAG_CATEGORY_CLASS)) {
+            if (flag.includes(icon)) return cls;
+        }
+        if (flag.includes("✅") || flag.includes("Verified") || flag.includes("Trusted")) return "safe";
+        return "";
+    }
+
     async function loadScanHistory() {
         try {
             const response = await fetch('/api/history');
             const data = await response.json();
-            
             const tableBody = document.getElementById('historyTableBody');
-            tableBody.innerHTML = ''; 
-            
+            tableBody.innerHTML = '';
+
             if (!data || data.length === 0 || data.error) {
                 tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No database transaction logs recorded yet.</td></tr>`;
                 return;
             }
-            
+
             data.forEach(item => {
                 const cleanResult = item.result.toLowerCase();
-                const isSafe = cleanResult === 'safe' || cleanResult === 'clean' || cleanResult.includes('legitimate');
-                const badgeClass = isSafe ? 'bg-success' : 'bg-danger';
-                
+                const isSafe = cleanResult === 'safe' || cleanResult === 'clean' ||
+                               cleanResult.includes('legitimate') || cleanResult.includes('trusted') ||
+                               cleanResult.includes('clean email') || cleanResult.includes('verified');
+                const isWorldCup = cleanResult.includes('world cup') || cleanResult.includes('⚽');
+                const isGov    = cleanResult.includes('government') || cleanResult.includes('🏛️');
+                const isEdu    = cleanResult.includes('education')  || cleanResult.includes('🎓');
+                const isOffice = cleanResult.includes('office')     || cleanResult.includes('💼');
+                const isEmail  = item.type === 'email';
+
+                let badgeClass = isSafe ? 'bg-success' : 'bg-danger';
+                if (isWorldCup) badgeClass = 'bg-warning';
+
+                let typeBadge = `<span class="badge bg-secondary">${item.type}</span>`;
+                if (isEmail)   typeBadge = `<span class="badge bg-email">${item.type}</span>`;
+                if (isGov)     typeBadge = `<span class="badge" style="background:#dbeafe;color:#1e40af;">🏛️ ${item.type}</span>`;
+                if (isEdu)     typeBadge = `<span class="badge" style="background:#d1fae5;color:#065f46;">🎓 ${item.type}</span>`;
+                if (isOffice)  typeBadge = `<span class="badge" style="background:#ede9fe;color:#5b21b6;">💼 ${item.type}</span>`;
+
                 const scoreDisplay = item.score !== undefined ? `${item.score}%` : 'N/A';
-                
-                const row = `
+
+                tableBody.insertAdjacentHTML('beforeend', `
                     <tr>
-                        <td><span class="badge bg-secondary">${item.type}</span></td>
-                        <td style="max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.input}">${item.input}</td>
+                        <td>${typeBadge}</td>
+                        <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${item.input}">${item.input}</td>
                         <td><span class="badge ${badgeClass}">${item.result}</span></td>
                         <td><strong>${scoreDisplay}</strong></td>
                         <td class="small text-muted">${item.time}</td>
                     </tr>
-                `;
-                tableBody.insertAdjacentHTML('beforeend', row);
+                `);
             });
         } catch (error) {
-            console.error('Error fetching dashboard database logs:', error);
-            document.getElementById('historyTableBody').innerHTML = `<tr><td colspan="5" class="text-center text-muted" style="color: #dc2626 !important;">Failed to load server relational logs.</td></tr>`;
+            document.getElementById('historyTableBody').innerHTML =
+                `<tr><td colspan="5" class="text-center" style="color:#dc2626;">Failed to load server logs.</td></tr>`;
         }
     }
 
-    // Load active records immediately when page initialises
     document.addEventListener('DOMContentLoaded', loadScanHistory);
 
-    // 1. Script for URL Scan endpoint routing
     async function runUrlAnalysis() {
         const urlInput = document.getElementById('url_input').value.trim();
         const urlBtn = document.getElementById('urlBtn');
@@ -296,10 +484,7 @@
         const urlVerdict = document.getElementById('urlVerdict');
         const urlMetrics = document.getElementById('urlMetrics');
 
-        if (!urlInput) {
-            alert("Please provide a URL to check.");
-            return;
-        }
+        if (!urlInput) { alert("Please provide a URL to check."); return; }
 
         urlBtn.innerText = "Analyzing Domain Patterns...";
         urlBtn.disabled = true;
@@ -322,24 +507,140 @@
                 } else {
                     urlResultBox.style.borderLeftColor = "#16a34a";
                     urlVerdict.style.color = "#166534";
-                    urlVerdict.innerHTML = "✅ SAFE: Legitimate Web Destination Registration Verified";
+                    urlVerdict.innerHTML = "✅ SAFE: Legitimate Web Destination Verified";
                 }
-                urlMetrics.innerHTML = `Phishing Probability: ${(data.phish_probability * 100).toFixed(2)}% | Legitimacy Probability: ${(data.legit_probability * 100).toFixed(2)}%`;
-                
-                // Hot reload history log layout component update
+                urlMetrics.innerHTML = `Phishing Probability: ${(data.phish_probability * 100).toFixed(2)}% | Legitimacy: ${(data.legit_probability * 100).toFixed(2)}%`;
                 loadScanHistory();
             } else {
                 alert("URL System Error: " + data.error);
             }
         } catch (err) {
-            alert("Failed to communicate with system URL endpoints.");
+            alert("Failed to communicate with URL endpoint.");
         } finally {
             urlBtn.innerText = "Scan URL Security";
             urlBtn.disabled = false;
         }
     }
 
-    // 2. Script for Hybrid Message Scanner Endpoint routing
+    async function runEmailCheck() {
+        const emailInput = document.getElementById('email_input').value.trim();
+        const emailBtn = document.getElementById('emailBtn');
+        const resultBox = document.getElementById('emailResultBox');
+
+        if (!emailInput) { alert("Please provide an email address."); return; }
+
+        emailBtn.innerText = "Checking Domain Intelligence...";
+        emailBtn.disabled = true;
+        resultBox.style.display = "none";
+
+        try {
+            const response = await fetch('/check-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: emailInput })
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                resultBox.style.display = "block";
+
+                const verdictEl = document.getElementById('emailVerdict');
+                const isFakeCat = data.is_fake_category;
+                const category  = data.domain_category || "General";
+
+                if (data.is_suspicious) {
+                    let borderColor = "#dc2626";
+                    let textColor   = "#991b1b";
+                    if (data.worldcup_related)              { borderColor = "#f59e0b"; textColor = "#92400e"; }
+                    else if (category === "Government")     { borderColor = "#2563eb"; textColor = "#1e40af"; }
+                    else if (category === "Education")      { borderColor = "#16a34a"; textColor = "#065f46"; }
+                    else if (category === "Office/Corporate") { borderColor = "#7c3aed"; textColor = "#5b21b6"; }
+
+                    resultBox.style.borderLeftColor = borderColor;
+                    verdictEl.style.color = textColor;
+
+                    if (data.worldcup_related)
+                        verdictEl.innerHTML = `⚽ ⚠️ WORLD CUP PHISHING CAMPAIGN DETECTED`;
+                    else if (isFakeCat && category === "Government")
+                        verdictEl.innerHTML = `🏛️ 🚨 FAKE GOVERNMENT DOMAIN DETECTED`;
+                    else if (isFakeCat && category === "Education")
+                        verdictEl.innerHTML = `🎓 🚨 FAKE EDUCATION DOMAIN DETECTED`;
+                    else if (isFakeCat && category === "Office/Corporate")
+                        verdictEl.innerHTML = `💼 🚨 FAKE OFFICE / CORPORATE DOMAIN DETECTED`;
+                    else
+                        verdictEl.innerHTML = `🚨 SUSPICIOUS: ${data.verdict}`;
+                } else {
+                    let borderColor = "#16a34a";
+                    let textColor   = "#166534";
+                    if (category === "Government")          { borderColor = "#2563eb"; textColor = "#1e40af"; }
+                    else if (category === "Education")      { borderColor = "#16a34a"; textColor = "#065f46"; }
+                    else if (category === "Office/Corporate") { borderColor = "#7c3aed"; textColor = "#5b21b6"; }
+
+                    resultBox.style.borderLeftColor = borderColor;
+                    verdictEl.style.color = textColor;
+                    verdictEl.innerHTML = `✅ ${data.verdict}`;
+                }
+
+                // Category pill
+                const pillEl = document.getElementById('emailCategoryPill');
+                const catStyle  = CATEGORY_STYLES[category] || CATEGORY_STYLES["General"];
+                const pillCls   = isFakeCat ? "cat-fake" : catStyle.cls;
+                const pillLabel = isFakeCat ? `⚠️ FAKE ${catStyle.label}` : catStyle.label;
+                pillEl.innerHTML = `<span class="category-pill ${pillCls}">${pillLabel}</span>`;
+
+                // Meta grid
+                document.getElementById('emailDomain').textContent = data.domain || '—';
+
+                const riskEl = document.getElementById('emailRiskLevel');
+                riskEl.textContent = data.risk_level;
+                riskEl.className = {
+                    'Critical': 'risk-critical',
+                    'High':     'risk-high',
+                    'Medium':   'risk-medium',
+                    'Low':      'risk-low'
+                }[data.risk_level] || '';
+
+                const scorePercent = Math.round(data.score * 100);
+                document.getElementById('emailScore').textContent    = `${scorePercent}%`;
+                document.getElementById('emailCategory').textContent = `${data.domain_category_icon || ''} ${data.domain_category || '—'}`;
+                document.getElementById('emailWC').textContent       = data.worldcup_related  ? '⚽ YES' : 'No';
+                document.getElementById('emailFakeCat').textContent  = data.is_fake_category  ? '⚠️ YES — Impersonation' : '✅ No';
+
+                // Risk bar
+                const bar = document.getElementById('emailRiskBar');
+                bar.style.width = scorePercent + '%';
+                bar.style.backgroundColor =
+                    scorePercent >= 80 ? '#dc2626' :
+                    scorePercent >= 50 ? '#f97316' :
+                    scorePercent >= 25 ? '#f59e0b' : '#16a34a';
+
+                // Flags
+                const flagsDiv = document.getElementById('emailFlags');
+                flagsDiv.innerHTML = '';
+                if (data.flags && data.flags.length > 0) {
+                    data.flags.forEach(flag => {
+                        const badge = document.createElement('span');
+                        const extraCls = getFlagClass(flag);
+                        badge.className = `flag-badge${extraCls ? ' ' + extraCls : ''}`;
+                        badge.innerText = flag;
+                        flagsDiv.appendChild(badge);
+                    });
+                } else {
+                    flagsDiv.innerHTML = `<span style="font-size:13px;color:#64748b;">No suspicious flags triggered.</span>`;
+                }
+
+                loadScanHistory();
+            } else {
+                alert("Email Check Error: " + data.error);
+            }
+        } catch (err) {
+            alert("Failed to communicate with email check endpoint.");
+        } finally {
+            emailBtn.innerText = "Analyze Email Domain";
+            emailBtn.disabled = false;
+        }
+    }
+
     async function runDirectMessageAnalysis() {
         const message = document.getElementById('direct_message').value.trim();
         const msgType = document.getElementById('direct_msg_type').value;
@@ -350,10 +651,7 @@
         const riskBar = document.getElementById('directRiskBar');
         const flagsDiv = document.getElementById('directFlags');
 
-        if (!message) {
-            alert("Please paste text streams to analyze.");
-            return;
-        }
+        if (!message) { alert("Please paste text to analyze."); return; }
 
         btn.innerText = "Processing Ensemble Framework Pipelines...";
         btn.disabled = true;
@@ -393,10 +691,9 @@
                         flagsDiv.appendChild(badge);
                     });
                 } else {
-                    flagsDiv.innerHTML = "<span style='font-size: 13px; color:#64748b;'>No suspicious heuristic rules triggered.</span>";
+                    flagsDiv.innerHTML = `<span style="font-size:13px;color:#64748b;">No suspicious heuristic rules triggered.</span>`;
                 }
-                
-                // Hot reload history log layout component update
+
                 loadScanHistory();
             } else {
                 alert("Message System Error: " + data.error);
@@ -409,6 +706,5 @@
         }
     }
 </script>
-
 </body>
 </html>
